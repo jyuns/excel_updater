@@ -3,9 +3,8 @@
     <v-app-bar app dark>
     Excel Updater
     </v-app-bar>
-
+    
     <v-main style='padding:100px 16px 16px 16px'>
-
       <div style='display:flex;position:relative;justify-content:center;z-index:999;'>
         <v-alert type='info' v-show='alertUpload' style='position:absolute'>
           {{files.length}} 건의 파일이 성공적으로 업로드 되었습니다.
@@ -14,10 +13,14 @@
         <v-alert type='success' v-show='alertSuccess' style='position:absolute'>
           {{currentUpdate}}/{{files.length}} 진행 중입니다.
         </v-alert>
+
+        <v-alert type='error' v-show='nullError.length != 0' style='position:absolute'>
+          {{nullError}}
+        </v-alert>
       </div>
 
       <file/>
-      
+
       <viewer/>
       
       <v-card>
@@ -35,7 +38,7 @@
             <v-card flat style='margin-top: 16px;'>
               <v-card-text>
               <v-text-field
-                label="열 번호"
+                label="열 번호(알파벳, ex. A/B/C/D..)"
                 v-model='findColumn'
               ></v-text-field>
               <v-textarea
@@ -107,6 +110,7 @@ export default {
 
     alertUpload : false,
     alertSuccess : false,
+    nullError : '',
 
     currentUpdate : 0,
   }),
@@ -135,6 +139,14 @@ export default {
 
     async onUniqueUpdate() {
       
+      if(this.files.length == 0) {
+        this.nullError = '수정할 파일을 선택해 주세요.'
+        setTimeout(()=>{
+          this.nullError = ''
+        }, 1500)
+        return
+      }
+
       this.alertSuccess = true
 
       for(let x = 0; x < this.files.length; x ++) {
@@ -191,10 +203,32 @@ export default {
       setTimeout( () => {
         this.alertSuccess = false
         this.currentUpdate = 0
+        this.headerNumber = 1
       }, 1500)
     },
 
     async onAllColumnUpdate() {
+
+      if(this.files.length == 0) {
+        this.nullError = '수정할 파일을 선택해 주세요.'
+        setTimeout(()=>{
+          this.nullError = ''
+        }, 1500)
+        return
+      } else if(this.findColumn == null) {
+        this.nullError = '수정할 열을 입력해 주세요.'
+        setTimeout(()=>{
+          this.nullError = ''
+        }, 1500)
+        return
+
+      } else if(this.changeValue1 == null) {
+        this.nullError = '변경할 값을 입력해 주세요.'
+        setTimeout(()=>{
+          this.nullError = ''
+        }, 1500)
+        return
+      }
 
       this.alertSuccess = true
 
@@ -234,10 +268,34 @@ export default {
       setTimeout( () => {
         this.alertSuccess = false
         this.currentUpdate = 0
+        this.findColumn = null
+        this.changeValue1 = null
+        this.headerNumber = 1
       }, 1500)
     },
 
     async onSelectUpdate() {
+      if(this.files.length == 0) {
+        this.nullError = '수정할 파일을 선택해 주세요.'
+        setTimeout(()=>{
+          this.nullError = ''
+        }, 1500)
+        return
+
+      } else if(this.findValue == null) {
+        this.nullError = '찾아서 수정할 값을 입력해 주세요.'
+        setTimeout(()=>{
+          this.nullError = ''
+        }, 1500)
+        return
+
+      } else if(this.changeValue2 == null) {
+        this.nullError = '변경할 값을 입력해 주세요.'
+        setTimeout(()=>{
+          this.nullError = ''
+        }, 1500)
+        return
+      }
 
       this.alertSuccess = true
 
@@ -275,6 +333,9 @@ export default {
       setTimeout( () => {
         this.alertSuccess = false
         this.currentUpdate = 0
+        this.findValue = null
+        this.changeValue2 = null
+        this.headerNumber = 1
       }, 1500)
     },
 

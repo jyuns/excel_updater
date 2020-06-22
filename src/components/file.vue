@@ -18,7 +18,7 @@
       <v-tab-item :key='"파일"'>
         <v-card flat style='margin-top: 16px;'>
           <v-card-text id='folder' style='display:flex;align-items: center; justify-content:space-between'>
-            <input type='file' accept='application/vnd.ms-excel'
+            <input type='file' accept='.xlsx,.xls'
             @change='getFiles' id='input-files' style='display:none;' ref='files' multiple/>
             
             <h5 style='margin: 6px; max-width: 160px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;' v-if='files.length > 0'>{{files[0].name}} /</h5>
