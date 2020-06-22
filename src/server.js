@@ -11,9 +11,10 @@ const XLGEN = require('xlgen')
 
 nodeApp.use(cors())
 
+
 // request entity scale
-nodeApp.use(bodyParser.json({limit:'50mb'}))
-nodeApp.use(bodyParser.urlencoded({limit:'50mb', extended:true}))
+nodeApp.use(bodyParser.json({limit:'100mb'}))
+nodeApp.use(bodyParser.urlencoded({limit:'100mb', extended:true}))
 
 // function list
 function alphaToNum(alpha) {
@@ -31,10 +32,10 @@ function alphaToNum(alpha) {
 nodeApp.post('/read', (req, res) => {
   let path = req.body.path
 
-  let wb = XLSX.readFile(path, {raw : true})
+  let wb = XLSX.readFile(path)
   let ws = wb.Sheets[wb.SheetNames[0]]
   let fileType = (path).match(/\.[a-z]*$/i)[0]
-
+  
   // range setting
   let range = Object.keys(ws)
   range.splice(range.indexOf('!ref'), 1)
@@ -89,13 +90,15 @@ nodeApp.post('/writeXLS', (req, res) => {
 })
 
 nodeApp.post('/writeXLSX', (req, res) => {
-    let wb = req.body.wb
-    let ws = req.body.ws
-    let path = req.body.path
-    
-    wb.Sheets[wb.SheetNames[0]] = ws
-    XLSX.writeFile(wb, path, {bookType:'xlsx', type:'binary'})
-    res.end('write .xlsx complete')
+  let ws = req.body.ws
+  let path = req.body.path
+
+  let wb = XLSX.utils.book_new()
+  
+  XLSX.utils.book_append_sheet(wb, ws)
+
+  XLSX.writeFile(wb, path, {bookSST:true, compression:true, ignoreEC : false, bookVBA:true, type:"binary", bookType:'xlsx'})
+  res.end('write .xlsx complete')
 })
 
 nodeApp.listen(8082, () => {

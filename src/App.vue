@@ -156,8 +156,9 @@ export default {
           path : this.files[x].path,
         })
       
-
+      
         for(let y = 0; y <= this.alphaToNum(result.data.maxAlpha); y++) {
+          if(result.data.ws[this.numToAlpha(y) + '1'] == undefined) return
           if(result.data.ws[this.numToAlpha(y) + '1'].v == '상품명') {
             this.productColumn = this.numToAlpha(y)
           }
