@@ -115,7 +115,7 @@ export default {
     currentUpdate : 0,
   }),
 
-  created() {
+  async created() {
     eventBus.$on('remove-file', e => {
       this.files = e
     })
@@ -134,6 +134,7 @@ export default {
       this.headerNumber = e
     })
   },
+
 
   methods : {
 

@@ -11,6 +11,30 @@ const XLGEN = require('xlgen')
 
 nodeApp.use(cors())
 
+const getDurationInMilliseconds = (start) => {
+  const NS_PER_SEC = 1e9
+  const NS_TO_MS = 1e6
+  const diff = process.hrtime(start)
+
+  return (diff[0] * NS_PER_SEC + diff[1]) / NS_TO_MS
+}
+
+nodeApp.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl} [STARTED]`)
+  const start = process.hrtime()
+
+  res.on('finish', () => {            
+      const durationInMilliseconds = getDurationInMilliseconds (start)
+      console.log(`${req.method} ${req.originalUrl} [FINISHED] ${durationInMilliseconds .toLocaleString()} ms`)
+  })
+
+  res.on('close', () => {
+      const durationInMilliseconds = getDurationInMilliseconds (start)
+      console.log(`${req.method} ${req.originalUrl} [CLOSED] ${durationInMilliseconds .toLocaleString()} ms`)
+  })
+
+  next()
+})
 
 // request entity scale
 nodeApp.use(bodyParser.json({limit:'100mb'}))
@@ -70,13 +94,13 @@ nodeApp.post('/writeXLS', (req, res) => {
   let xlg = XLGEN.createXLGen(path)
   let sheet = xlg.addSheet('sheet')
 
+  let key = Object.keys(ws)
 
-  for(let x = 0; x < Object.keys(ws).length; x++) {
-    if(alphaToNum(Object.keys(ws)[x]) > 0) {
-      
-      sheet.cell((Number(Object.keys(ws)[x].replace(/[^0-9]*/g, "")) - 1),
-                 alphaToNum(Object.keys(ws)[x].replace(/[^A-Z]*/g, "")),
-                 ws[Object.keys(ws)[x]].v)
+  for(let x = 0; x < key.length; x++) {
+    if(alphaToNum(key[x]) > 0) {
+      sheet.cell((Number(key[x].replace(/[^0-9]*/g, "")) - 1),
+                 alphaToNum(key[x].replace(/[^A-Z]*/g, "")),
+                 ws[key[x]].v)
     }
   }
 
@@ -100,6 +124,7 @@ nodeApp.post('/writeXLSX', (req, res) => {
   XLSX.writeFile(wb, path, {bookSST:true, compression:true, ignoreEC : false, bookVBA:true, type:"binary", bookType:'xlsx'})
   res.end('write .xlsx complete')
 })
+
 
 nodeApp.listen(8082, () => {
     console.log('')
