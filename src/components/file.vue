@@ -25,7 +25,7 @@
             <h5 style='margin:6px;'> 총 {{files.length}}개 업로드</h5>
             
             <div>
-              <v-btn depressed small color="primary" @click='uploadFiles' style='margin-right: 12px;'>업로드</v-btn>
+              <v-btn depressed small color="primary" @click='uploadFiles()' style='margin-right: 12px;'>업로드</v-btn>
               <v-btn depressed small color="error" @click='resetFiles()'>취소</v-btn>
             </div>
           </v-card-text>
@@ -68,6 +68,7 @@ export default {
 
     methods : {
         getFiles(e) {
+          eventBus.$emit('remove-file', [])
           console.log('files-uploaded')
           for(let i = 0; i < e.target.files.length; i++) {
             if ((e.target.files[i].name).match(/\.[a-z]*$/i)[0] == '.xlsx') {
@@ -96,23 +97,21 @@ export default {
         },
 
         uploadFolder() {
-          this.files = []
-          this.$refs.folder.click()
-
-          if(this.$refs.folder == undefined) return
-          else if(this.$refs.files == undefined) return
-          this.$refs.folder.value = ''
-          this.$refs.files.value = ''
+          if(this.$refs.files != undefined) {
+            this.files = []
+            this.$refs.folder.value = ''
+            eventBus.$emit('remove-file', [])
+          }
+            this.$refs.folder.click()
         },
 
         uploadFiles() {
-          this.files = []
-          this.$refs.files.click()
-
-          if(this.$refs.folder == undefined) return
-          else if(this.$refs.files == undefined) return
-          this.$refs.folder.value = ''
-          this.$refs.files.value = ''
+          if(this.$refs.files != undefined) {
+            this.files = []
+            this.$refs.files.value = ''
+            eventBus.$emit('remove-file', [])
+          }
+            this.$refs.files.click()
         },
 
         resetFiles() {

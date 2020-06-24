@@ -118,11 +118,12 @@ export default {
   async created() {
     eventBus.$on('remove-file', e => {
       this.files = e
+      this.headerNumber = 1
     })
 
     eventBus.$on('upload-file', e => {
       this.files = e
-
+      this.headerNumber = 1
       this.alertUpload = true
 
       setTimeout( () => {
@@ -205,7 +206,6 @@ export default {
       setTimeout( () => {
         this.alertSuccess = false
         this.currentUpdate = 0
-        this.headerNumber = 1
       }, 1500)
     },
 
@@ -233,7 +233,7 @@ export default {
       }
 
       this.alertSuccess = true
-
+      this.findColumn = this.findColumn.toUpperCase()
       for(let x = 0; x < this.files.length; x ++) {
         this.currentUpdate = x
         let result = await this.axios.post('http://localhost:8082/read', {
@@ -272,7 +272,6 @@ export default {
         this.currentUpdate = 0
         this.findColumn = null
         this.changeValue1 = null
-        this.headerNumber = 1
       }, 1500)
     },
 
@@ -337,7 +336,6 @@ export default {
         this.currentUpdate = 0
         this.findValue = null
         this.changeValue2 = null
-        this.headerNumber = 1
       }, 1500)
     },
 
